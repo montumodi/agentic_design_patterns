@@ -64,35 +64,30 @@ coordinator = Agent(
 )
 
 async def run_coordinator(runner: InMemoryRunner, request: str):
-    final_result = ""
-    try:
-        user_id = "user234"
-        session_id = str(uuid.uuid4())
-        await runner.session_service.create_session(
-            app_name=runner.app_name, user_id=user_id, session_id=session_id
-        )
+    user_id = "user234"
+    session_id = str(uuid.uuid4())
+    await runner.session_service.create_session(
+        app_name=runner.app_name, user_id=user_id, session_id=session_id
+    )
 
-        for event in runner.run(
-            user_id=user_id,
-            session_id=session_id,
-            new_message=types.Content(
-                role='user',
-                parts=[types.Part(text=request)]
-            ),
-        ):
-            if event.is_final_response() and event.content:
-                if hasattr(event.content, 'text') and event.content.text:
-                    final_result = event.content.text
-                elif event.content.parts:
-                    text_parts = [part.text for part in event.content.parts if part.text]
-                    final_result = " ".join(text_parts)
-                    break
-        print(final_result)
-        return final_result
+    events = runner.run(
+        user_id=user_id,
+        session_id=session_id,
+        new_message=types.Content(
+            role='user',
+            parts=[types.Part(text=request)]
+        ),
+    )
 
-    except Exception as e:
-        print(f"An error occurred while processing your request: {e}")
-        return f"An error occurred while processing your request: {e}"
+    for event in events:
+        if event.is_final_response() and event.content:
+            # Try to get text from event.content.text or from parts
+            if getattr(event.content, 'text', None):
+                return event.content.text
+            text_parts = [part.text for part in getattr(event.content, 'parts', []) if getattr(part, 'text', None)]
+            if text_parts:
+                return " ".join(text_parts)
+    return "No response received."
     
 async def main():
     runner = InMemoryRunner(coordinator)
