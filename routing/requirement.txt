@@ -5,3 +5,4 @@ langchain-google-genai
 google-adk
 deprecated
 pydantic
+nest_asyncio
