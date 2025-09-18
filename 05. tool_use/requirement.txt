@@ -1,0 +1,10 @@
+langchain
+langgraph
+google-cloud-aiplatform
+langchain-google-genai
+google-generativeai
+google-adk
+deprecated
+pydantic
+nest_asyncio
+crewai
