@@ -24,3 +24,4 @@ One or more agents generate solutions while critic agents review, evaluate, and 
 
 ![alt text](Architecture.jpg)
 ![alt text](Architecture_1.jpg)
+![alt text](Architecture_2.jpg)
