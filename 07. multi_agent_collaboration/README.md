@@ -23,3 +23,4 @@ Specialized agents with domain expertise collaborate on problems requiring diver
 One or more agents generate solutions while critic agents review, evaluate, and provide feedback. This creates an iterative improvement process through constructive criticism.
 
 ![alt text](Architecture.jpg)
+![alt text](Architecture_1.jpg)
