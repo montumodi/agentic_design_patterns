@@ -94,6 +94,19 @@ Orchestrates multiple specialized agents working together through various collab
 
 ---
 
+### 8. [Memory Management](./08.%20memory_management/)
+**Persistent Context Pattern**
+
+Implements both short-term and long-term memory systems for agents to maintain context, learn from interactions, and provide personalized experiences across sessions. Combines temporary conversational memory with persistent knowledge storage.
+
+**Use Cases:**
+- Personalized AI assistants that remember user preferences
+- Conversational agents maintaining context across long interactions
+- Learning systems that improve based on historical interactions
+- Knowledge accumulation for specialized domain expertise
+
+---
+
 ## Implementation Technologies
 
 Each pattern is implemented using popular AI frameworks and libraries:
@@ -121,6 +134,7 @@ Each pattern is implemented using popular AI frameworks and libraries:
 | Tool Use | External integrations, computations | Medium | No |
 | Planning | Complex goal decomposition | Medium | No |
 | Multi-Agent Collaboration | Complex collaborative scenarios | High | Yes |
+| Memory Management | Persistent context, personalization | Medium | No |
 
 ## Architecture Diagrams
 
