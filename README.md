@@ -107,6 +107,19 @@ Implements both short-term and long-term memory systems for agents to maintain c
 
 ---
 
+### 9. [Learning and Adaptation](./09.%20learning_and_adaptation/)
+**Continuous Improvement Pattern**
+
+Enables agents to evolve beyond predefined parameters by learning from experience and environmental interaction. Agents improve autonomously through various learning mechanisms including reinforcement learning, supervised learning, and direct preference optimization, allowing them to handle novel situations and optimize performance without constant manual intervention.
+
+**Use Cases:**
+- Reinforcement learning for autonomous decision-making in dynamic environments
+- Few-shot learning for rapid adaptation to new tasks with minimal examples
+- Online learning for real-time adaptation in streaming data scenarios
+- Preference learning for aligning agent behavior with human values and expectations
+
+---
+
 ## Implementation Technologies
 
 Each pattern is implemented using popular AI frameworks and libraries:
@@ -135,6 +148,7 @@ Each pattern is implemented using popular AI frameworks and libraries:
 | Planning | Complex goal decomposition | Medium | No |
 | Multi-Agent Collaboration | Complex collaborative scenarios | High | Yes |
 | Memory Management | Persistent context, personalization | Medium | No |
+| Learning and Adaptation | Continuous improvement, autonomous learning | High | No |
 
 ## Architecture Diagrams
 
