@@ -120,6 +120,19 @@ Enables agents to evolve beyond predefined parameters by learning from experienc
 
 ---
 
+### 15. [Agent-to-Agent (A2A)](./15.%20a2a/)
+**Peer-to-Peer Communication Pattern**
+
+Enables direct communication between autonomous agents without centralized control. Agents discover each other's capabilities, exchange messages using protocols, and collaborate through peer-to-peer interactions while maintaining individual autonomy and decision-making abilities.
+
+**Use Cases:**
+- Distributed problem solving across multiple autonomous systems
+- Decentralized agent marketplaces and service exchanges
+- Peer-to-peer information sharing and negotiation
+- Building resilient systems without single points of failure
+
+---
+
 ## Implementation Technologies
 
 Each pattern is implemented using popular AI frameworks and libraries:
@@ -149,6 +162,7 @@ Each pattern is implemented using popular AI frameworks and libraries:
 | Multi-Agent Collaboration | Complex collaborative scenarios | High | Yes |
 | Memory Management | Persistent context, personalization | Medium | No |
 | Learning and Adaptation | Continuous improvement, autonomous learning | High | No |
+| A2A | Decentralized peer-to-peer agent systems | Medium | Yes |
 
 ## Architecture Diagrams
 
