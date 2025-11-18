@@ -1,13 +1,9 @@
-import code
 import os
 import random
 import re
 from pathlib import Path
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
-from numpy import integer, positive
 
 # Load environment variables from .env file
 load_dotenv()
@@ -17,12 +13,15 @@ llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", api_key=os.getenv("GEMINI_A
 # --- Utility Functions ---
 def generate_prompt(use_case: str, goals: list[str], previous_code: str = "", feedback: str = "") -> str:
     print("📝 Constructing prompt for code generation...")
+    # Performance: Pre-format goals list once instead of in f-string
+    goals_text = "\n".join(f"- {g.strip()}" for g in goals)
+    
     base_prompt = f"""
     You are an AI coding agent. Your job is to write Python code based
     on the following use case:
     Use Case: {use_case}
     Your goals are:
-    {chr(10).join(f"- {g.strip()}" for g in goals)}
+    {goals_text}
     """
     if previous_code:
         print("🔄 Adding previous code to the prompt for refinement.")
@@ -35,10 +34,13 @@ def generate_prompt(use_case: str, goals: list[str], previous_code: str = "", fe
 
 def get_code_feedback(code: str, goals: list[str]) -> str:
     print("🔍 Evaluating code against the goals...")
+    # Performance: Pre-format goals list once
+    goals_text = "\n".join(f"- {g.strip()}" for g in goals)
+    
     feedback_prompt = f"""
     You are a Python code reviewer. A code snippet is shown below.
     Based on the following goals:
-    {chr(10).join(f"- {g.strip()}" for g in goals)}
+    {goals_text}
     Please critique this code and identify if the goals are met.
     Mention if improvements are needed for clarity, simplicity,
     correctness, edge case handling, or test coverage.
@@ -52,10 +54,13 @@ def goals_met(feedback_text: str, goals: list[str]) -> bool:
     on the feedback text.
     Returns True or False (parsed from LLM output).
     """
+    # Performance: Pre-format goals list once
+    goals_text = "\n".join(f"- {g.strip()}" for g in goals)
+    
     review_prompt = f"""
     You are an AI reviewer.
     Here are the goals:
-    {chr(10).join(f"- {g.strip()}" for g in goals)}
+    {goals_text}
     Here is the feedback on the code:
     \"\"\"
     {feedback_text}
@@ -84,18 +89,15 @@ def to_snake_case(text: str) -> str:
 
 def save_code_to_file(code: str, use_case: str) -> str:
     print("💾 Saving final code to file...")
-    summary_prompt = (
-    f"Summarize the following use case into a single lowercase word or phrase, "
-    f"no more than 10 characters, suitable for a Python filename:\n\n{use_case}"
-    )
-    raw_summary = llm.invoke(summary_prompt).content.strip()
-    short_name = re.sub(r"[^a-zA-Z0-9_]", "", raw_summary.replace(" ", "_").lower())[:10]
+    # Performance: Use simpler filename generation without LLM call
+    # Extract first few words from use_case for filename
+    short_name = to_snake_case(use_case)[:10]
     random_suffix = str(random.randint(1000, 9999))
     filename = f"{short_name}_{random_suffix}.py"
     filepath = Path.cwd() / filename
     with open(filepath, "w") as f:
         f.write(code)
-        print(f"✅ Code saved to: {filepath}")
+    print(f"✅ Code saved to: {filepath}")
     return str(filepath)
 
 # --- Main Agent Function ---
@@ -105,26 +107,30 @@ def run_code_agent(use_case: str, goals_input: str, max_iterations: int = 5) -> 
     print("🎯 Goals:")
     for g in goals:
         print(f" - {g}")
-        previous_code = ""
-        feedback = ""
-        for i in range(max_iterations):
-            print(f"\n=== 🔁 Iteration {i + 1} of {max_iterations} ===")
-            prompt = generate_prompt(use_case, goals, previous_code, feedback if isinstance(feedback, str) else feedback.content)
-            print("🚧 Generating code...")
-            code_response = llm.invoke(prompt)
-            raw_code = code_response.content.strip()
-            code = clean_code_block(raw_code)
-            print("\n🧾 Generated Code:\n" + "-" * 50 + f"\n{code}\n" + "-" * 50)
-            print("\n📤 Submitting code for feedback review...")
-            feedback = get_code_feedback(code, goals)
-            feedback_text = feedback.content.strip()
-            print("\n📥 Feedback Received:\n" + "-" * 50 +
-            f"\n{feedback_text}\n" + "-" * 50)
-            if goals_met(feedback_text, goals):
-                print("✅ LLM confirms goals are met. Stopping iteration.")
-                break
-    print("🛠️ Goals not fully met. Preparing for next iteration...")
-    previous_code = code
+    
+    previous_code = ""
+    feedback = ""
+    
+    for i in range(max_iterations):
+        print(f"\n=== 🔁 Iteration {i + 1} of {max_iterations} ===")
+        prompt = generate_prompt(use_case, goals, previous_code, feedback if isinstance(feedback, str) else feedback.content)
+        print("🚧 Generating code...")
+        code_response = llm.invoke(prompt)
+        raw_code = code_response.content.strip()
+        code = clean_code_block(raw_code)
+        print("\n🧾 Generated Code:\n" + "-" * 50 + f"\n{code}\n" + "-" * 50)
+        print("\n📤 Submitting code for feedback review...")
+        feedback = get_code_feedback(code, goals)
+        feedback_text = feedback.content.strip()
+        print("\n📥 Feedback Received:\n" + "-" * 50 + f"\n{feedback_text}\n" + "-" * 50)
+        
+        if goals_met(feedback_text, goals):
+            print("✅ LLM confirms goals are met. Stopping iteration.")
+            break
+        
+        print("🛠️ Goals not fully met. Preparing for next iteration...")
+        previous_code = code
+    
     final_code = add_comment_header(code, use_case)
     return save_code_to_file(final_code, use_case)
 # --- CLI Test Run ---

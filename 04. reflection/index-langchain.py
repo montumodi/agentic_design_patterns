@@ -1,10 +1,6 @@
 import os
-import asyncio
-from typing import Optional
-from urllib import response
 
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv
 
@@ -62,11 +58,13 @@ negative number.
         if "CODE_IS_PERFECT" in critique:
             print("\n--- Critique ---\nNo further critiques found. The code is satisfactory.")
             break
-            print("\n--- Critique ---\n" + critique)
-            # Add the critique to the history for the next refinement loop.
-            message_history.append(HumanMessage(content=f"Critique of the previous code:\n{critique}"))
-            print("\n" + "="*30 + " FINAL RESULT " + "="*30)
-            print("\nFinal refined code after the reflection process:\n")
-            print(current_code)
+        
+        print("\n--- Critique ---\n" + critique)
+        # Add the critique to the history for the next refinement loop.
+        message_history.append(HumanMessage(content=f"Critique of the previous code:\n{critique}"))
+    
+    print("\n" + "="*30 + " FINAL RESULT " + "="*30)
+    print("\nFinal refined code after the reflection process:\n")
+    print(current_code)
 if __name__ == "__main__":
     run_reflection_loop()
