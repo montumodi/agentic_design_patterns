@@ -1,6 +1,7 @@
 import os
 import requests
 from typing import List, Dict, Any, TypedDict
+from pathlib import Path
 from langchain_community.document_loaders import TextLoader
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
@@ -14,27 +15,65 @@ from langgraph.graph import StateGraph, END
 import dotenv
 # Load environment variables (e.g., OPENAI_API_KEY)
 dotenv.load_dotenv()
-# --- 1. Data Preparation (Preprocessing) ---
-# Load data
-url = "https://github.com/langchain-ai/langchain/blob/master/docs/docs/how_to/state_of_the_union.txt"
-res = requests.get(url)
 
-with open("state_of_the_union.txt", "w") as f:
-    f.write(res.text)
-    loader = TextLoader('./state_of_the_union.txt')
-    documents = loader.load()
-    # Chunk documents
-    text_splitter = CharacterTextSplitter(chunk_size=500,
-    chunk_overlap=50)
-    chunks = text_splitter.split_documents(documents)
-    # Embed and store chunks in FAISS
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=os.environ["GEMINI_API_KEY"])
+# --- 1. Data Preparation (Preprocessing) ---
+# Performance Optimization: Cache downloaded file and vectorstore to avoid redundant processing
+DATA_FILE = "state_of_the_union.txt"
+VECTORSTORE_DIR = "faiss_vectorstore"
+
+def load_or_download_data():
+    """Load data from cache or download if not available."""
+    if not Path(DATA_FILE).exists():
+        print(f"Downloading data from GitHub...")
+        url = "https://github.com/langchain-ai/langchain/blob/master/docs/docs/how_to/state_of_the_union.txt"
+        res = requests.get(url)
+        with open(DATA_FILE, "w") as f:
+            f.write(res.text)
+    else:
+        print(f"Using cached data file: {DATA_FILE}")
     
-vectorstore = FAISS.from_documents(
-    documents = chunks,
-    embedding = embeddings
-)
+    loader = TextLoader(f'./{DATA_FILE}')
+    documents = loader.load()
+    return documents
+
+def create_or_load_vectorstore():
+    """Create vectorstore from documents or load from disk if available."""
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001", 
+        google_api_key=os.environ["GEMINI_API_KEY"]
+    )
+    
+    if Path(VECTORSTORE_DIR).exists():
+        print(f"Loading cached vectorstore from {VECTORSTORE_DIR}...")
+        vectorstore = FAISS.load_local(
+            VECTORSTORE_DIR, 
+            embeddings,
+            allow_dangerous_deserialization=True
+        )
+    else:
+        print("Creating new vectorstore...")
+        documents = load_or_download_data()
+        # Chunk documents
+        text_splitter = CharacterTextSplitter(
+            chunk_size=500,
+            chunk_overlap=50
+        )
+        chunks = text_splitter.split_documents(documents)
+        # Embed and store chunks in FAISS
+        vectorstore = FAISS.from_documents(
+            documents=chunks,
+            embedding=embeddings
+        )
+        # Save vectorstore for future use
+        vectorstore.save_local(VECTORSTORE_DIR)
+        print(f"Vectorstore saved to {VECTORSTORE_DIR}")
+    
+    return vectorstore
+
+# Initialize vectorstore and retriever
+vectorstore = create_or_load_vectorstore()
 retriever = vectorstore.as_retriever()
+
 # Initialize Gemini LLM
 llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0, google_api_key=os.environ["GEMINI_API_KEY"])
 
