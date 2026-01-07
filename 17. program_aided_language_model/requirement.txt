@@ -1,0 +1,8 @@
+a2a-sdk[http-server]
+python-dotenv
+httpx
+uvicorn
+langchain-google-genai
+langchain-core
+google-adk
+
