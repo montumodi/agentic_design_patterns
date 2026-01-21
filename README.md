@@ -168,6 +168,17 @@ Each pattern is implemented using popular AI frameworks and libraries:
 
 Each pattern folder contains architectural diagrams (`Architecture.jpg`) that visually explain the pattern's structure and data flow. These diagrams provide clear visual understanding of how agents interact and process information.
 
+## Performance Considerations
+
+This repository implements several performance optimizations to improve efficiency and reduce costs:
+
+- **Caching**: RAG pattern caches downloaded data and FAISS vectorstores
+- **String Optimization**: Pre-formatted strings to avoid repeated computations
+- **Reduced API Calls**: Eliminated unnecessary LLM invocations
+- **Async Operations**: Uses async/await for I/O operations where applicable
+
+For detailed information about performance optimizations and best practices, see [PERFORMANCE.md](./PERFORMANCE.md).
+
 ## Contributing
 
 Feel free to contribute additional patterns, improvements to existing implementations, or new framework integrations. Each pattern should include:

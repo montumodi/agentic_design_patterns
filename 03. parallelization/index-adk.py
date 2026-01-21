@@ -15,8 +15,8 @@ GEMINI_MODEL = "gemini-2.0-flash"
 researcher_agent_1 = LlmAgent(
     name="RenewableEnergyResearcher",
     model=GEMINI_MODEL,
-    instruction="""You are an AI research assistant speciliazing in energy.
-      Research the latest developements in 'renewable energy sources'.
+    instruction="""You are an AI research assistant specializing in energy.
+      Research the latest developments in 'renewable energy sources'.
         Use the google search tool provided.
           Summarize your key findings concisely (1-2 sentences).
           Output *only* the summary""",
@@ -30,8 +30,8 @@ researcher_agent_1 = LlmAgent(
 researcher_agent_2 = LlmAgent(
     name="ElectricVehiclesResearcher",
     model=GEMINI_MODEL,
-    instruction="""You are an AI research assistant speciliazing in transportation.
-      Research the latest developements in 'electric vehicles technology'.
+    instruction="""You are an AI research assistant specializing in transportation.
+      Research the latest developments in 'electric vehicles technology'.
         Use the google search tool provided.
           Summarize your key findings concisely (1-2 sentences).
           Output *only* the summary""",
@@ -45,8 +45,8 @@ researcher_agent_2 = LlmAgent(
 researcher_agent_3 = LlmAgent(
     name="CarbonCaptureResearcher",
     model=GEMINI_MODEL,
-    instruction="""You are an AI research assistant speciliazing in climate solutions.
-      Research the latest developements in 'carbon capture methods'.
+    instruction="""You are an AI research assistant specializing in climate solutions.
+      Research the latest developments in 'carbon capture methods'.
         Use the google search tool provided.
           Summarize your key findings concisely (1-2 sentences).
           Output *only* the summary""",
@@ -66,13 +66,13 @@ parallel_researcher_agent = ParallelAgent(
 merger_agent = LlmAgent(
     name="SynthesisAgent",
     model=GEMINI_MODEL,
-    instruction="""You are an AI assistant responsible for combining research findings in to structured report.
+    instruction="""You are an AI assistant responsible for combining research findings into a structured report.
       Your primary task is to synthesize the following research summaries, clearly
       attributing findings to their source areas. Structure your response using headings for each topic.
       Ensure the report is coherent and integrates the key points smoothly.
         **Crucially: Your entire response MUST be grounded *exclusively* on the 
-        informatio provided in the 'Input Summaries' below. DO NOT add any external knowledge, facts, or details not present
-        in theese specific summaries.**
+        information provided in the 'Input Summaries' below. DO NOT add any external knowledge, facts, or details not present
+        in these specific summaries.**
         
         **Input Summaries:**
 * **Renewable Energy:**

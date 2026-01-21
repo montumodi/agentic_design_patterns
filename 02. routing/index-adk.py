@@ -32,7 +32,7 @@ def unclear_handler(request: str) -> str:
 booking_tool = FunctionTool(booking_handler)
 info_tool = FunctionTool(info_handler)
 
-# Define specialized sub agents equipped with thier resespective tools
+# Define specialized sub agents equipped with their respective tools
 booking_agent = Agent(
     name="Booker",
     model="gemini-2.0-flash",
